@@ -2,15 +2,13 @@ const express = require('express');
 const formidable = require('formidable');
 const reader = require('xlsx')
 const app = express();
-const router = express.Router();
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
-
-router.get('/', function (req, res,next){
+const bodyParser = require('body-parser')
+app.use(express.urlencoded({extended:true}));  
+app.get('/', function (req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
-router.post('/', jsonParser, function (req, res){
+app.post('/', function (req, res){
     const form = new formidable.IncomingForm();
 
     console.log('max:')
@@ -47,4 +45,6 @@ router.post('/', jsonParser, function (req, res){
     res.sendFile(__dirname + '/index.html');
 });
  
-app.use('/',router);
+app.listen(3000, () => {
+  console.log('Server listening on http://localhost:3000 ...');
+});
