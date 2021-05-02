@@ -2,17 +2,17 @@ const express = require('express');
 const formidable = require('formidable');
 const reader = require('xlsx')
 const app = express();
-const bodyParser = require('body-parser')
 app.use(express.urlencoded({extended:true}));  
 app.get('/', function (req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/', function (req, res){
-    const form = new formidable.IncomingForm();
-
     console.log('max:')
     console.log(req.body)
+    const form = new formidable.IncomingForm();
+
+    
     form.on('fileBegin', function (name, file){
         file.path = __dirname + '/uploads/' + file.name;
     });
