@@ -2,22 +2,23 @@ const express = require('express');
 const formidable = require('formidable');
 const reader = require('xlsx')
 const app = express();
-app.use(express.urlencoded({extended:true}));  
 app.get('/', function (req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/', function (req, res){
-    console.log('max:')
-    console.log(req.body)
     const form = new formidable.IncomingForm();
-
+    
+    form.parse(req, (err, fields)=>{
+        console.log(`maxval:${fields.maxVal}`)
+    })
     
     form.on('fileBegin', function (name, file){
-        file.path = __dirname + '/uploads/' + file.name;
+        if(file.size>0) file.path = __dirname + '/uploads/' + file.name;
     });
 
     form.on('file', function (name, file){
+        if(file.size>0){
         console.log('Uploaded ' + file.name);
 
         // Reading our test file
@@ -31,15 +32,15 @@ app.post('/', function (req, res){
         {
         const temp = reader.utils.sheet_to_json(
             readFile.Sheets[readFile.SheetNames[i]])
-        temp.forEach((res) => {
-            console.log(res['GMT Erişim Tarihi'])
-            data.push(res)
-        })
+            temp.forEach((res) => {
+                console.log(res['GMT Erişim Tarihi'])
+                data.push(res)
+            })
         }
         
         // Printing data
         //console.log(data[0]['Hedef'])
-
+    }
     });
 
     res.sendFile(__dirname + '/index.html');
