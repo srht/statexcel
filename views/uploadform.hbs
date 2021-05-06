@@ -1,0 +1,51 @@
+<form action="/" enctype="multipart/form-data" method="post">
+    <input type="file" name="upload" multiple>
+    <input type="text" name="minVal" placeholder="min" />
+    <input type="text" name="maxVal" placeholder="max" />
+    <input type="submit" value="Upload">
+</form>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" aria-current="page" id="sonuc-list" href="#sonuclar">Sonuçlar</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" id="error-list" href="#errors">Hatalı Veri</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+    <div id="sonuclar" class="tab-pane active" role="tabpanel" aria-labelledby="sonuc-list">
+        {{#if statsData}}
+        <h2>Sütun Sonuçları</h2>
+        <div class="row">
+            <ul>
+            {{#each statsData}}
+                <li><strong>{{this.cell}}:</strong> 
+                    <ul>
+                        <li> Min: {{this.min}}</li>
+                        <li> Max: {{this.max}}</li>
+                        <li> Mean: {{this.mean}}</li>
+                        <li> Median: {{this.median}}</li>
+                    </ul>
+            </li>
+            {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+    </div>
+    <div id="errors" class="tab-pane" role="tabpanel" aria-labelledby="error-list">
+        {{#if errorData}}
+        <h2>Hatalı</h2>
+        <div class="row">
+            <ul>
+            {{#each errorData}}
+                <li><strong>{{this.cellCode}}</strong> 
+            </li>
+            {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
