@@ -76,7 +76,9 @@ app.post('/', function (req, res){
     //for(let rowNum=0;rowNum<data.length;rowNum++)
     //console.log(`${data[rowNum][0]} ${data[rowNum][2]}`)
 
-    const transpose = arr => arr.reduce((m, r) => (r.forEach((v, i) => (m[i] ??= [], m[i].push(v))), m), [])
+    const transpose = arr => arr.reduce((m, r) => (r.forEach((v, i) => {
+        if(!m[i]) m[i]=[]; else m[i].push(v);
+    }), m), [])
 
     /*
     
