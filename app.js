@@ -85,16 +85,16 @@ let transpozedData=transpose(data)
 
 for (let columnNumber = 0; columnNumber < transpozedData.length; columnNumber++) {
     const cell = reader.utils.encode_cell({c:columnNumber, r:1})
-    console.log(`${cell[0]} sütunu:`)
+    //console.log(`${cell[0]} sütunu:`)
     
     const min=mathjs.min(transpozedData[columnNumber])
-    console.log(`Min: ${min}`)
+    //console.log(`Min: ${min}`)
     const max=mathjs.max(transpozedData[columnNumber])
-    console.log(`Max: ${max}`)
+    //console.log(`Max: ${max}`)
     const mean=mathjs.mean(transpozedData[columnNumber])
-    console.log(`Mean: ${mean}`)
+    //console.log(`Mean: ${mean}`)
     const median=mathjs.median(transpozedData[columnNumber])
-    console.log(`Median: ${median}`)
+    //console.log(`Median: ${median}`)
     statsData.push({
         cell:cell[0], min, max, mean, median
     })
