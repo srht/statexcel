@@ -84,24 +84,36 @@ app.post('/', function (req, res) {
             
         */
             let transpozedData = transpose(data)
-
-            for (let columnNumber = 0; columnNumber < transpozedData.length; columnNumber++) {
-                const columnCode = reader.utils.encode_col(columnNumber)
+            let errorSummary=[]
+            for (let columnIndex = 0; columnIndex < transpozedData.length; columnIndex++) {
+                const columnCode = reader.utils.encode_col(columnIndex)
                 //console.log(`${cell[0]} sütunu:`)
 
-                const min = mathjs.min(transpozedData[columnNumber])
+                const min = mathjs.min(transpozedData[columnIndex])
                 //console.log(`Min: ${min}`)
-                const max = mathjs.max(transpozedData[columnNumber])
+                const max = mathjs.max(transpozedData[columnIndex])
                 //console.log(`Max: ${max}`)
-                const mean = mathjs.mean(transpozedData[columnNumber])
+                const mean = mathjs.mean(transpozedData[columnIndex])
                 //console.log(`Mean: ${mean}`)
-                const median = mathjs.median(transpozedData[columnNumber])
+                const median = mathjs.median(transpozedData[columnIndex])
 
-                const variance = mathjs.variance(transpozedData[columnNumber])
+                const variance = mathjs.variance(transpozedData[columnIndex])
                 const stdDevi=mathjs.sqrt(variance)
                 //console.log(`Median: ${median}`)
                 statsData.push({
-                    columnHeader:columnTitles[columnNumber], columnCode, min, max, mean, median, stdDevi
+                    columnHeader:columnTitles[columnIndex], columnCode, min, max, mean, median, stdDevi
+                })
+
+                // error summary bulunuyor 
+                let filteredErrorData=errorData.filter(e=>parseInt(e.colNum)===columnIndex)
+                let errorRateForColumn=(filteredErrorData.length*1.0/(transpozedData[columnIndex].length+1)) // transpozeda sütun başlıklarını sayıya dahil etmediğinden +1 ekliyoruz
+
+                errorSummary.push({
+                    columnHeader:columnTitles[columnIndex],
+                    errorRateForColumn: errorRateForColumn*100,
+                    filteredErrorData,
+                    columnCode,
+                    showDetailed: errorRateForColumn>0.2
                 })
             }
 
@@ -121,22 +133,6 @@ app.post('/', function (req, res) {
             // Printing data
             //console.log(data[0]['Hedef'])
             //console.log(errorData)
-
-            let errorSummary=[]
-            
-           for (let colIndex = 0; colIndex < transpozedData.length; colIndex++) { // column sayısını veriyor
-                let filteredErrorData=errorData.filter(e=>parseInt(e.colNum)===colIndex)
-                let errorRateForColumn=(filteredErrorData.length*1.0/(transpozedData[colIndex].length+1)) // transpozeda sütun başlıklarını sayıya dahil etmediğinden +1 ekliyoruz
-                const columnCode = reader.utils.encode_col(colIndex)
-                errorSummary.push({
-                    columnHeader:columnTitles[colIndex],
-                    errorRateForColumn: errorRateForColumn*100,
-                    filteredErrorData,
-                    columnCode,
-                    showDetailed: errorRateForColumn>0.2
-                })
-           }
-           
 
             res.render('uploadform', { errorSummary, statsData });
         }
