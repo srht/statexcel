@@ -49,42 +49,32 @@ app.post('/', function (req, res) {
                 for (let column in row) {
                     if(columnTitles.indexOf(column)===-1) columnTitles.push(column)
                     let cellValue = row[column].toString();
-                    //console.log(key + ": " + value);
+                    
                     let trimmedCellValue = cellValue.trim()
                     let parsedNumberVal = Number(trimmedCellValue)
                     if (!cellValue || isNaN(parsedNumberVal)) {
                         const cellCode = reader.utils.encode_cell({ c: colNum, r: rowNumber })
-                        //console.log(`${key} satır ${parsedNumberVal} sütun hatalı`)
+                        
                         errorData.push({ column, colNum, rowNumber, cellCode })
                         rowArr.push(0)
                     }
                     else {
                         rowArr.push(parsedNumberVal)
                     }
-                    //console.log(Number(trimmed))
+                    
                     colNum++
                 }
-                /*console.log(res['PREOP CA /POSTOP CA'])
-                let preop=res['PREOP CA /POSTOP CA'];
-                let numbers=preop.split('/').map((n)=>Number(n))
-                data.push({ name: res[3], numbers: numbers })*/
+                
                 data.push(rowArr)
                 rowNumber++
             })
-            //  res.setHeader('Content-Type', 'application/json');
-            //res.end(JSON.stringify(data));
-            //for(let rowNum=0;rowNum<data.length;rowNum++)
-            //console.log(`${data[rowNum][0]} ${data[rowNum][2]}`)
-
+            
             const transpose = arr => arr.reduce((m, r) => (r.forEach((v, i) => {
                 if (!m[i]) m[i] = []; else m[i].push(v);
             }), m), [])
 
             const onlyUnique=(value, index, self)=>self.indexOf(value)===index;
 
-            /*
-            
-        */
             let transpozedData = transpose(data)
             let errorSummary=[]
             for (let columnIndex = 0; columnIndex < transpozedData.length; columnIndex++) {
@@ -131,24 +121,7 @@ app.post('/', function (req, res) {
 
 
             }
-
-            //console.log(reader.utils.encode_cell({c:2, r:4}))
-            /*
-            for(let i = 0; i < sheets.length; i++)
-            {
-                const temp = reader.utils.sheet_to_json(readFile.Sheets[readFile.SheetNames[i]])
-                temp.forEach((res) => {
-                    console.log(res['PREOP CA /POSTOP CA'])
-                    /*let preop=res['PREOP CA /POSTOP CA'];
-                    let numbers=preop.split('/').map((n)=>Number(n))
-                    data.push({ name: res[3], numbers: numbers })
-                })
-            }
-            */
-            // Printing data
-            //console.log(data[0]['Hedef'])
-            //console.log(errorData)
-
+            
             res.render('uploadform', { errorSummary, statsData });
         }
     });
