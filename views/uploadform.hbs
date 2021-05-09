@@ -1,7 +1,5 @@
 <form action="/" enctype="multipart/form-data" method="post">
     <input type="file" name="upload" multiple>
-    <input type="text" name="minVal" placeholder="min" />
-    <input type="text" name="maxVal" placeholder="max" />
     <input type="submit" value="Upload">
 </form>
 
@@ -21,12 +19,13 @@
         <div class="row">
             <ul>
             {{#each statsData}}
-                <li><strong>{{this.cell}}:</strong> 
+                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> 
                     <ul>
                         <li> Min: {{this.min}}</li>
                         <li> Max: {{this.max}}</li>
                         <li> Mean: {{this.mean}}</li>
                         <li> Median: {{this.median}}</li>
+                        <li> Standart Sapma: {{this.stdDevi}}</li>
                     </ul>
             </li>
             {{/each}}
@@ -35,13 +34,12 @@
         {{/if}}
     </div>
     <div id="errors" class="tab-pane" role="tabpanel" aria-labelledby="error-list">
-        {{#if errorData}}
+        {{#if errorSummary}}
         <h2>Hatalı</h2>
         <div class="row">
             <ul>
-            {{#each errorData}}
-                <li><strong>{{this.cellCode}}</strong> 
-            </li>
+            {{#each errorSummary}}
+                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> %{{this.errorRateForColumn}} </li>
             {{/each}}
             </ul>
         </div>
