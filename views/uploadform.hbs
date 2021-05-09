@@ -26,6 +26,18 @@
                         <li> Mean: {{this.mean}}</li>
                         <li> Median: {{this.median}}</li>
                         <li> Standart Sapma: {{this.stdDevi}}</li>
+                        {{#if this.uniqueValuesRatios}}
+                            <li>
+                                <a class="" data-toggle="collapse" href="#valuesContainer-{{this.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseValue">
+                                    <strong>Değer Oranları</strong>
+                                </a> 
+                                <ul class="collapse" id="valuesContainer-{{this.columnCode}}">
+                                    {{#each this.uniqueValuesRatios}}
+                                        <li>{{this.value}}: %{{this.valuePresenceRatio}} </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                        {{/if}}
                     </ul>
             </li>
             {{/each}}

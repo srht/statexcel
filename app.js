@@ -80,6 +80,8 @@ app.post('/', function (req, res) {
                 if (!m[i]) m[i] = []; else m[i].push(v);
             }), m), [])
 
+            const onlyUnique=(value, index, self)=>self.indexOf(value)===index;
+
             /*
             
         */
@@ -100,9 +102,20 @@ app.post('/', function (req, res) {
                 const variance = mathjs.variance(transpozedData[columnIndex])
                 const stdDevi=mathjs.sqrt(variance)
                 //console.log(`Median: ${median}`)
-                statsData.push({
-                    columnHeader:columnTitles[columnIndex], columnCode, min, max, mean, median, stdDevi
-                })
+
+                const statsColumnData={
+                    columnHeader:columnTitles[columnIndex], columnCode, min, max, mean, median, stdDevi, uniqueValuesRatios:[]
+                }
+
+                 // değerlerin yüzdesi
+               const uniqueValues= transpozedData[columnIndex].filter(onlyUnique)
+               uniqueValues.forEach(value => {
+                   const valueCount=transpozedData[columnIndex].filter(f=>f===value).length
+                   const valuePresenceRatio=(valueCount*1.0/transpozedData[columnIndex].length)*100
+                   statsColumnData.uniqueValuesRatios.push({ value, valuePresenceRatio })
+               });
+               
+               statsData.push(statsColumnData)
 
                 // error summary bulunuyor 
                 let filteredErrorData=errorData.filter(e=>parseInt(e.colNum)===columnIndex)
@@ -115,6 +128,8 @@ app.post('/', function (req, res) {
                     columnCode,
                     showDetailed: errorRateForColumn>0.2
                 })
+
+
             }
 
             //console.log(reader.utils.encode_cell({c:2, r:4}))
