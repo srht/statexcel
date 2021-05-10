@@ -1,11 +1,9 @@
-<form action="/" enctype="multipart/form-data" method="post">
-    <input type="file" name="upload" multiple>
-    <input type="submit" value="Upload">
-</form>
-
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link active" data-toggle="tab" aria-current="page" id="sonuc-list" href="#sonuclar">Sonuçlar</a>
+    <a class="nav-link active" data-toggle="tab" aria-current="page" id="upload-form" href="#uploadForm">Dosya Yükle</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" aria-current="page" id="sonuc-list" href="#sonuclar">Sonuçlar</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" data-toggle="tab" id="error-list" href="#errors">Hatalı Veri</a>
@@ -13,7 +11,13 @@
 </ul>
 
 <div class="tab-content">
-    <div id="sonuclar" class="tab-pane active" role="tabpanel" aria-labelledby="sonuc-list">
+    <div id="uploadForm" class="tab-pane active p-3" role="tabpanel" aria-labelledby="upload-form">
+        <form action="/" enctype="multipart/form-data" method="post">
+            <input type="file" name="upload">
+            <input class="btn btn-primary" type="submit" value="Upload">
+        </form>
+    </div>
+    <div id="sonuclar" class="tab-pane p-3" role="tabpanel" aria-labelledby="sonuc-list">
         {{#if statsData}}
         <h2>Sütun Sonuçları</h2>
         <div class="row">
@@ -45,13 +49,32 @@
         </div>
         {{/if}}
     </div>
-    <div id="errors" class="tab-pane" role="tabpanel" aria-labelledby="error-list">
+    <div id="errors" class="tab-pane p-3" role="tabpanel" aria-labelledby="error-list">
         {{#if errorSummary}}
-        <h2>Hatalı</h2>
+        <h2>Hatalı Girişler</h2>
+        <p>Harflerle belirtilen sütunlardaki hatalı girilmiş veri oranları gösterilmektedir.</p>
         <div class="row">
             <ul>
             {{#each errorSummary}}
-                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> %{{this.errorRateForColumn}} </li>
+                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> 
+                {{#if this.errorRateIfFull}}
+                <span>Hepsi sorunlu.</span>
+                {{else}} 
+                %{{this.errorRateForColumn}} 
+                {{/if}}
+                {{#if this.showDetailed}}
+                <a class="btn-sm btn-danger" data-toggle="collapse" href="#errsContainer-{{this.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseErrs">
+                                        <strong>Hatalı Alanları Göster</strong>
+                                    </a> 
+                    <div>
+                        <ul class="collapse" id="errsContainer-{{this.columnCode}}">
+                            {{#each this.filteredErrorData}}
+                                <li>{{this.cellCode}}</li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </li>
+                {{/if}}
             {{/each}}
             </ul>
         </div>

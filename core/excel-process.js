@@ -9,39 +9,45 @@ class ExcelProcessor {
          const readFile = reader.readFile(file.path)
          //const sheets = readFile.SheetNames
          //console.log(sheets[0])
-         const sheetRows = reader.utils.sheet_to_json(readFile.Sheets[readFile.SheetNames[0]], { defval: "" })
-        const data = []
+        const sheetRows = reader.utils.sheet_to_json(readFile.Sheets[readFile.SheetNames[0]], { defval: "" })
+        const normalizedData = []
+        const rawData=[]
         const errorData=[]
         const statsData=[]
         const columnTitles=[]
         let rowNumber = 0
         sheetRows.forEach((row) => {
             let rowArr = []
+            let rawRowArr=[]
             let colNum = 0
             for (let column in row) {
                 if(columnTitles.indexOf(column)===-1) columnTitles.push(column)
                 let cellValue = row[column].toString();
-                
-                let trimmedCellValue = cellValue.trim()
+                let trimmedCellValue = cellValue.trim();
+
                 let parsedNumberVal = Number(trimmedCellValue)
-                if (!cellValue || isNaN(parsedNumberVal)) {
+                if (!cellValue || isNaN(parsedNumberVal)||parsedNumberVal>100000) {
                     const cellCode = reader.utils.encode_cell({ c: colNum, r: rowNumber })
                     
                     errorData.push({ column, colNum, rowNumber, cellCode })
                     rowArr.push(0)
+                    rawRowArr.push(trimmedCellValue)
                 }
                 else {
                     rowArr.push(parsedNumberVal)
+                    rawRowArr.push(parsedNumberVal)
                 }
                 
                 colNum++
             }
             
-            data.push(rowArr)
+            rawData.push(rawRowArr)
+            normalizedData.push(rowArr)
             rowNumber++
         })
 
-        let transpozedData = transpose(data)
+        let transpozedData = transpose(normalizedData)
+        let transpozedRawData=transpose(rawData)
         let errorSummary=[]
         for (let columnIndex = 0; columnIndex < transpozedData.length; columnIndex++) {
             const columnCode = reader.utils.encode_col(columnIndex)
@@ -51,12 +57,12 @@ class ExcelProcessor {
             //console.log(`Min: ${min}`)
             const max = mathjs.max(transpozedData[columnIndex])
             //console.log(`Max: ${max}`)
-            const mean = mathjs.mean(transpozedData[columnIndex])
+            const mean = Number.parseFloat(mathjs.mean(transpozedData[columnIndex])).toPrecision(3)
             //console.log(`Mean: ${mean}`)
             const median = mathjs.median(transpozedData[columnIndex])
 
             const variance = mathjs.variance(transpozedData[columnIndex])
-            const stdDevi=mathjs.sqrt(variance)
+            const stdDevi=Number.parseFloat(mathjs.sqrt(variance)).toPrecision(3)
             //console.log(`Median: ${median}`)
 
             const statsColumnData={
@@ -64,10 +70,10 @@ class ExcelProcessor {
             }
 
              // değerlerin yüzdesi
-           const uniqueValues= transpozedData[columnIndex].filter(onlyUnique)
+           const uniqueValues= transpozedRawData[columnIndex].filter(onlyUnique)
            uniqueValues.forEach(value => {
-               const valueCount=transpozedData[columnIndex].filter(f=>f===value).length
-               const valuePresenceRatio=(valueCount*1.0/transpozedData[columnIndex].length)*100
+               const valueCount=transpozedRawData[columnIndex].filter(f=>f===value).length
+               const valuePresenceRatio=Number.parseFloat((valueCount*1.0/transpozedRawData[columnIndex].length)*100).toPrecision(3)
                statsColumnData.uniqueValuesRatios.push({ value, valuePresenceRatio })
            });
            
@@ -79,10 +85,11 @@ class ExcelProcessor {
 
             errorSummary.push({
                 columnHeader:columnTitles[columnIndex],
-                errorRateForColumn: errorRateForColumn*100,
+                errorRateForColumn: Number.parseFloat(errorRateForColumn).toPrecision(3)*100,
+                errorRateIfFull:errorRateForColumn===1,
                 filteredErrorData,
                 columnCode,
-                showDetailed: errorRateForColumn>0.2
+                showDetailed: 0.001<errorRateForColumn && errorRateForColumn<0.9 
             })
      }
 

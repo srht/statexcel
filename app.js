@@ -31,7 +31,6 @@ app.post('/', function (req, res) {
     form.on('file', function (name, file) {
         if (file.size > 0) {
             console.log('Uploaded ' + file.name);
-
             const returnObj= ExcelProcessor.process(file)
 
             res.render('uploadform', returnObj);
