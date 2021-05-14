@@ -26,7 +26,7 @@ class ExcelProcessor {
                 let trimmedCellValue = cellValue.trim();
 
                 let parsedNumberVal = Number(trimmedCellValue)
-                if (!cellValue || isNaN(parsedNumberVal)||parsedNumberVal>100000) {
+                if (!cellValue || isNaN(parsedNumberVal)||parsedNumberVal>100000) { // 100000'den büyükse tc kimlik no gibi sayıları da string olarak tanımlıyor
                     const cellCode = reader.utils.encode_cell({ c: colNum, r: rowNumber })
                     
                     errorData.push({ column, colNum, rowNumber, cellCode })
