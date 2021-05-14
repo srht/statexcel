@@ -66,7 +66,7 @@ class ExcelProcessor {
             //console.log(`Median: ${median}`)
 
             const statsColumnData={
-                columnHeader:columnTitles[columnIndex], columnCode, min, max, mean, median, stdDevi, uniqueValuesRatios:[]
+                columnHeader:columnTitles[columnIndex], columnCode, min, max, mean, median, stdDevi, uniqueValuesRatios:[], errorSummary:null
             }
 
              // değerlerin yüzdesi
@@ -77,20 +77,21 @@ class ExcelProcessor {
                statsColumnData.uniqueValuesRatios.push({ value, valuePresenceRatio })
            });
            
-           statsData.push(statsColumnData)
+           
 
             // error summary bulunuyor 
             let filteredErrorData=errorData.filter(e=>parseInt(e.colNum)===columnIndex)
             let errorRateForColumn=(filteredErrorData.length*1.0/(transpozedData[columnIndex].length+1)) // transpozeda sütun başlıklarını sayıya dahil etmediğinden +1 ekliyoruz
-
-            errorSummary.push({
-                columnHeader:columnTitles[columnIndex],
-                errorRateForColumn: Number.parseFloat(errorRateForColumn).toPrecision(3)*100,
-                errorRateIfFull:errorRateForColumn===1,
-                filteredErrorData,
-                columnCode,
-                showDetailed: 0.001<errorRateForColumn && errorRateForColumn<0.9 
-            })
+        statsColumnData.errorSummary={
+            columnHeader:columnTitles[columnIndex],
+            errorRateForColumn: Number.parseFloat(errorRateForColumn).toPrecision(3)*100,
+            errorRateIfFull:errorRateForColumn===1,
+            filteredErrorData,
+            columnCode,
+            showDetailed: 0.001<errorRateForColumn && errorRateForColumn<0.9 
+        };
+        statsData.push(statsColumnData)
+            //errorSummary.push()
      }
 
      return { errorSummary, statsData  };

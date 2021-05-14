@@ -5,80 +5,88 @@
   <li class="nav-item">
     <a class="nav-link" data-toggle="tab" aria-current="page" id="sonuc-list" href="#sonuclar">Sonuçlar</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" id="error-list" href="#errors">Hatalı Veri</a>
-  </li>
 </ul>
 
 <div class="tab-content">
     <div id="uploadForm" class="tab-pane active p-3" role="tabpanel" aria-labelledby="upload-form">
         <form action="/" enctype="multipart/form-data" method="post">
             <input type="file" name="upload">
-            <input class="btn btn-primary" type="submit" value="Upload">
+            <input class="btn btn-primary" type="submit" value="Seçili Dosyayı Yükle">
         </form>
     </div>
     <div id="sonuclar" class="tab-pane p-3" role="tabpanel" aria-labelledby="sonuc-list">
         {{#if statsData}}
-        <h2>Sütun Sonuçları</h2>
+        <h3>Sütun Sonuçları</h3>
+        <p>Sütunların istatistiki değer hesapları listelenmektedir. Sütunların üzerine tıklayarak her bir değerin yüzdelik oranını da listeleyebilirsiniz. 
+            <br>Hatalı verileri göster butonuna tıklayarak o sütundaki hatalı giriş yapılmış hücreleri görebilirsiniz.
+        </p>
         <div class="row">
-            <ul>
-            {{#each statsData}}
-                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> 
-                    <ul>
-                        <li> Min: {{this.min}}</li>
-                        <li> Max: {{this.max}}</li>
-                        <li> Mean: {{this.mean}}</li>
-                        <li> Median: {{this.median}}</li>
-                        <li> Standart Sapma: {{this.stdDevi}}</li>
-                        {{#if this.uniqueValuesRatios}}
-                            <li>
-                                <a class="" data-toggle="collapse" href="#valuesContainer-{{this.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseValue">
-                                    <strong>Değer Oranları</strong>
-                                </a> 
-                                <ul class="collapse" id="valuesContainer-{{this.columnCode}}">
+            <table class="table table-hover table-responsive">
+                <thead>
+                    <th>Sütun</th>
+                    <th>Hata Oranı</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Ortalama</th>
+                    <th>Orta Değer</th>
+                    <th>Std. Sapma</th>
+                </thead>
+                <tbody>
+                    {{#each statsData}}
+                    <tr>
+                        <td style="width: 400px;">
+                            <a class="" data-toggle="collapse" href="#valuesContainer-{{this.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseValue">
+                            <strong>{{this.columnCode}} ({{this.columnHeader}})</strong>
+                            </a>
+                        </td>
+                        <td>
+                            {{#if this.errorSummary.errorRateIfFull}}
+                <span>Hepsi sorunlu.</span>
+                {{else}} 
+                %{{this.errorSummary.errorRateForColumn}} 
+                {{/if}}
+
+                {{#if this.errorSummary.showDetailed}}
+                <a class="btn-sm btn-danger" data-toggle="collapse" href="#errsContainer-{{this.errorSummary.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseErrs">
+                                        <strong>Hatalı Alanları Göster</strong>
+                                    </a> 
+                {{/if}}
+                        </td>
+                        <td>{{this.min}}</td>
+                        <td>{{this.max}}</td>
+                        <td>{{this.mean}}</td>
+                        <td>{{this.median}}</td>
+                        <td>{{this.stdDevi}}</td>
+                    </tr>
+                    {{#if this.uniqueValuesRatios}}
+                    <tr class="collapse" id="valuesContainer-{{this.columnCode}}">
+                        <td>
+                            
+                                <ul>
                                     {{#each this.uniqueValuesRatios}}
                                         <li>{{this.value}}: %{{this.valuePresenceRatio}} </li>
                                     {{/each}}
                                 </ul>
-                            </li>
-                        {{/if}}
-                    </ul>
-            </li>
-            {{/each}}
-            </ul>
-        </div>
-        {{/if}}
-    </div>
-    <div id="errors" class="tab-pane p-3" role="tabpanel" aria-labelledby="error-list">
-        {{#if errorSummary}}
-        <h2>Hatalı Girişler</h2>
-        <p>Harflerle belirtilen sütunlardaki hatalı girilmiş veri oranları gösterilmektedir.</p>
-        <div class="row">
-            <ul>
-            {{#each errorSummary}}
-                <li><strong>{{this.columnCode}} ({{this.columnHeader}}):</strong> 
-                {{#if this.errorRateIfFull}}
-                <span>Hepsi sorunlu.</span>
-                {{else}} 
-                %{{this.errorRateForColumn}} 
-                {{/if}}
-                {{#if this.showDetailed}}
-                <a class="btn-sm btn-danger" data-toggle="collapse" href="#errsContainer-{{this.columnCode}}" role="button" aria-expanded="false" aria-controls="collapseErrs">
-                                        <strong>Hatalı Alanları Göster</strong>
-                                    </a> 
-                    <div>
-                        <ul class="collapse" id="errsContainer-{{this.columnCode}}">
-                            {{#each this.filteredErrorData}}
-                                <li>{{this.cellCode}}</li>
+                        
+                        </td>
+                    </tr>{{/if}}
+                    {{#if this.errorSummary.showDetailed}}
+                    <tr class="collapse" id="errsContainer-{{this.errorSummary.columnCode}}">
+                        <td>
+                        <table class="table table-dark">
+                            {{#each this.errorSummary.filteredErrorData}}
+                                <tr><td>{{this.cellCode}}</td></tr>
                             {{/each}}
-                        </ul>
-                    </div>
-                </li>
+                        </table>
+                        </tr>
+                    </tr>
                 {{/if}}
-            {{/each}}
-            </ul>
+                    {{/each}}
+                </tbody>
+            </table>
         </div>
         {{/if}}
     </div>
+    
 </div>
 
