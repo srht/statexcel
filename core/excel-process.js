@@ -48,7 +48,7 @@ class ExcelProcessor {
 
         let transpozedData = transpose(normalizedData)
         let transpozedRawData=transpose(rawData)
-        let errorSummary=[]
+        
         for (let columnIndex = 0; columnIndex < transpozedData.length; columnIndex++) {
             const columnCode = reader.utils.encode_col(columnIndex)
             //console.log(`${cell[0]} sütunu:`)
@@ -94,7 +94,7 @@ class ExcelProcessor {
             //errorSummary.push()
      }
 
-     return { errorSummary, statsData  };
+     return { statsData  };
 }
 
 }
